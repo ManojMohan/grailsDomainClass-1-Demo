@@ -21,37 +21,38 @@ class BootStrap {
 
     void getter() {
         Company company = createCompany()
-        println "########################################################"
-        println "Getter ${company.getName()} Property ${company.name}"
+        println "############################ GETTERS ############################"
+        println "Getter: ${company.getName()} Property: ${company.name}"
         println "########################################################"
     }
 
     void companyToString() {
-        println "########################################################"
+        println "######################### TO STRING() ###############################"
         println "toString of Company ${createCompany()}"
         println "########################################################"
     }
 
     void transientExample() {
-        println "########################################################"
+        println "######################## TRANSIENT ################################"
         println new Employee(firstName: "Manoj", lastName: "Mohan").fullName
         println "########################################################"
     }
 
     void timestampExample() {
-        Employee employee = new Employee(firstName: "Manoj", lastName: "Mohan")
-        println "########################################################"
+        Company company = createCompany()
+        Employee employee = new Employee(company: company, firstName: "Manoj", lastName: "Mohan", email: "manoj@intelligrape.com", password: "password", salary: 200000F)
+        println "########################### TIMESTAMP #############################"
         println "Timestamps before save Datecreated: ${employee.dateCreated} -- lastUpdated: ${employee.lastUpdated}"
-        employee.save()
+        employee.save(flush: true)
         println "Timestamps after save Datecreated: ${employee.dateCreated} -- lastUpdated: ${employee.lastUpdated}"
         println "########################################################"
     }
 
     void validation() {
+        println "########################## VALIDATION ##############################"
         Company company = createCompany()
         Employee employee = new Employee(firstName: "Manoj", lastName: "Mohan", company: company, email: 'manoj+1@intelligrape.com', salary: 2000000F)
         println "Validate employee ${employee.save()}"
-        println "########################################################"
         employee.errors.allErrors.each {
             println it
         }
@@ -66,7 +67,7 @@ class BootStrap {
         Engine engine = new Engine(car: car)
         engine.save()
 
-        println "########################################################"
+        println "##################### ONE TO ONE ###################################"
         println "Engine of Car -: ${car.engine}"
         println "Car of Engine -: ${engine.car}"
         println "########################################################"
@@ -74,37 +75,37 @@ class BootStrap {
     }
 
     void oneToManyNoOwner() {
-        println "########################################################"
-        println "Project count before save  ${Project.count()}"
+        println "#################### ONE TO MANY (NO OWNER) ####################################"
+        println "Project count BEFORE save  ${Project.count()}"
+        println "Task count BEFORE save  ${Task.count()}"
         Project project = new Project(name: "Project")
-        project.save()
-        project.refresh()
         Task task = new Task(name: "Test")
+        println "Project tasks BEFORE adding task -: ${project.tasks}"
 
-        println "Task count before save  ${Task.count()}"
-        println "Project tasks before adding task -: ${project.tasks}"
         project.addToTasks(task)
         project.save(flush: true)
-        println "Project tasks after save -: ${project.tasks}"
+        println "Task count AFTER project saved: ${Task.count()}"
+        println "Project tasks AFTER save -: ${project.tasks}"
+
         println "########################################################"
         project.delete(flush: true)
-        println "Project count after delete -: ${Project.count()}"
-        println "Task count after project delete  -: ${Task.count()}"
+        println "Project count AFTER delete -: ${Project.count()}"
+        println "Task count AFTER project delete  -: ${Task.count()}"
         println "########################################################"
-
     }
 
     void oneToManyOwner() {
-        println "########################################################"
+        println "###################### ONE TO MANY (BELONGS TO) ##################################"
         println "Project count before save  ${Project.count()}"
         Project project = new Project(name: "Project")
-        Task task = new Task(name: "Test")
-
+        Task task = new Task(name: "Test", project: project)
         println "Task count before save  ${Task.count()}"
         println "Project tasks before adding task -: ${project.tasks}"
+
         project.addToTasks(task)
         project.save()
         println "Project tasks after save -: ${project.tasks}"
+
         println "########################################################"
         project.delete(flush: true)
         println "Project count after delete -: ${Project.count()}"
@@ -114,7 +115,7 @@ class BootStrap {
     }
 
     void manyToMany() {
-        println "########################################################"
+        println "####################### MANY TO MANY #################################"
         Employee employee = new Employee(firstName: "Manoj", lastName: "Mohan", company: createCompany(), email: 'manoj+1@intelligrape.com', password: "123411", salary: 20000F)
         Project project = new Project(name: "Project 1")
         println "Before adding project to employee ${employee.projects}"
